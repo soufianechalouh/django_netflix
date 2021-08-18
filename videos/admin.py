@@ -6,6 +6,8 @@ from .models import VideoAllProxy, VideoPublishedProxy
 class VideoAllProxyAdmin(admin.ModelAdmin):
     list_display = ["title", "id", "video_embed_id", "is_published"]
     search_fields = ["title"]
+    list_filter = ["active"]
+    readonly_fields = ["id"]
 
     class Meta:
         model = VideoAllProxy
