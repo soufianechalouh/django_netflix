@@ -8,6 +8,10 @@ class Video(models.Model):
     video_embed_id = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
 
+    @property
+    def is_published(self):
+        return self.active
+
 
 class VideoPublishedProxy(Video):
     class Meta:
