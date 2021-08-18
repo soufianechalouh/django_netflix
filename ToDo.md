@@ -1,0 +1,32 @@
+- Videos
+  - Long Videos (movies)
+  - Short Videos
+  - Playlists -> List of movies
+  - Seasons -> Playlists of Playlists
+- Categories:
+  - Action, Comedy, ...
+- Tags:
+  - Action, Comedy, Drama, Action-Comedy, Live Studio, (maybe "editor's choice")..
+- Ratings:
+  - 1-5 Star rating
+  - Prepare our sys for ML
+- Search:
+  - Title
+  - Descriptions
+  - Tags
+
+##Future
+- User Registration
+- UI(React/Vue)
+- DRF
+- Recommendations:
+  - Collaborative Filtering & ML
+- Elasticsearch
+- Video Analytics & Watch History
+- Video hosts API
+  - Vimeo, Youtube...
+  - Casting (ffmpeg)
+- API-Driven video details
+  - Cast members
+  - Release Year
+- Payments integration
