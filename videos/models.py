@@ -1,11 +1,14 @@
 from django.db import models
+from django.db.models.signals import pre_save
 from django.utils import timezone
-from django.utils.text import slugify
+
+from django_netflix.db.models import PublishStateOptions
+from django_netflix.db.receivers import publish_state_pre_save, slugify_pre_save
 
 
 class VideoQueryset(models.QuerySet):
     def published(self):
-        return self.filter(state=Video.VideoStateOptions.PUBLISHED, publish_timestamp__lte=timezone.now())
+        return self.filter(state=PublishStateOptions.PUBLISHED, publish_timestamp__lte=timezone.now())
 
 
 class VideoManager(models.Manager):
@@ -17,18 +20,12 @@ class VideoManager(models.Manager):
 
 
 class Video(models.Model):
-    class VideoStateOptions(models.TextChoices):
-        PUBLISHED = "PU", "Published"
-        DRAFT = "DR", "Draft"
-        UNLISTED = "UN", "Unlisted"
-        PRIVATE = "PR", "Private"
-
     title = models.CharField(max_length=230)
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(blank=True, null=True)
     video_embed_id = models.CharField(max_length=255, unique=True)
     active = models.BooleanField(default=True)
-    state = models.CharField(max_length=2, choices=VideoStateOptions.choices, default=VideoStateOptions.DRAFT)
+    state = models.CharField(max_length=2, choices=PublishStateOptions.choices, default=PublishStateOptions.DRAFT)
     publish_timestamp = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -38,15 +35,6 @@ class Video(models.Model):
     @property
     def is_published(self):
         return self.active
-
-    def save(self, *args, **kwargs):
-        if self.state == self.VideoStateOptions.PUBLISHED and self.publish_timestamp is None:
-            self.publish_timestamp = timezone.now()
-        elif self.state == self.VideoStateOptions.DRAFT:
-            self.publish_timestamp = None
-        if self.slug is None:
-            self.slug = slugify(self.title)
-        super().save(*args, **kwargs)
 
 
 class VideoPublishedProxy(Video):
@@ -61,3 +49,7 @@ class VideoAllProxy(Video):
         proxy = True
         verbose_name = "Video"
         verbose_name_plural = "All Videos"
+
+
+pre_save.connect(publish_state_pre_save, sender=Video)
+pre_save.connect(slugify_pre_save, sender=Video)
