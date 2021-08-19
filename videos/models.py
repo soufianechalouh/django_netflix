@@ -3,6 +3,19 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 
+class VideoQueryset(models.QuerySet):
+    def published(self):
+        return self.filter(state=Video.VideoStateOptions.PUBLISHED, publish_timestamp__lte=timezone.now())
+
+
+class VideoManager(models.Manager):
+    def get_queryset(self):
+        return VideoQueryset(self.model, using=self._db)
+
+    def published(self):
+        return self.get_queryset().published()
+
+
 class Video(models.Model):
     class VideoStateOptions(models.TextChoices):
         PUBLISHED = "PU", "Published"
@@ -19,6 +32,8 @@ class Video(models.Model):
     publish_timestamp = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    objects = VideoManager()
 
     @property
     def is_published(self):
