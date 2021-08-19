@@ -16,6 +16,8 @@ class Video(models.Model):
     active = models.BooleanField(default=True)
     state = models.CharField(max_length=2, choices=VideoStateOptions.choices, default=VideoStateOptions.DRAFT)
     publish_timestamp = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     @property
     def is_published(self):
