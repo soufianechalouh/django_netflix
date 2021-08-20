@@ -15,7 +15,7 @@ class TVShowSeasonProxyAdmin(admin.ModelAdmin):
         model = TVShowSeasonProxy
 
     def get_queryset(self, request):
-        return TVShowSeasonProxy.objects.all()
+        return TVShowSeasonProxy.objects.filter(type=Playlist.PlaylistTypeChoices.SEASON)
 
 
 admin.site.register(TVShowSeasonProxy, TVShowSeasonProxyAdmin)
@@ -36,7 +36,7 @@ class TVShowProxyAdmin(admin.ModelAdmin):
         model = TVShowProxy
 
     def get_queryset(self, request):
-        return TVShowProxy.objects.all()
+        return TVShowProxy.objects.filter(type=Playlist.PlaylistTypeChoices.TV_SHOW)
 
 
 admin.site.register(TVShowProxy, TVShowProxyAdmin)
@@ -52,6 +52,9 @@ class PlaylistAdmin(admin.ModelAdmin):
 
     class Meta:
         model = Playlist
+
+    def get_queryset(self, request):
+        return Playlist.objects.filter(type=Playlist.PlaylistTypeChoices.PLAYLIST)
 
 
 admin.site.register(Playlist, PlaylistAdmin)

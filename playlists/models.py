@@ -21,9 +21,16 @@ class PlaylistManager(models.Manager):
 
 
 class Playlist(models.Model):
+    class PlaylistTypeChoices(models.TextChoices):
+        MOVIE = "MOV", "Movie"
+        TV_SHOW = "TVS", "TV Show"
+        SEASON = "SEA", "Season"
+        PLAYLIST = "PLY", "Playlist"
+
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL)
     order = models.IntegerField(default=1)
     title = models.CharField(max_length=230)
+    type = models.CharField(max_length=3, choices=PlaylistTypeChoices.choices, default=PlaylistTypeChoices.PLAYLIST)
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(blank=True, null=True)
     video = models.ForeignKey(Video, related_name="playlist_featured", blank=True, null=True, on_delete=models.SET_NULL)
@@ -50,7 +57,7 @@ pre_save.connect(slugify_pre_save, sender=Playlist)
 
 class TVShowProxyManager(PlaylistManager):
     def all(self):
-        return self.get_queryset().filter(parent__isnull=True)
+        return self.get_queryset().filter(parent__isnull=True, type=Playlist.PlaylistTypeChoices.TV_SHOW)
 
 
 class TVShowProxy(Playlist):
@@ -65,7 +72,7 @@ class TVShowProxy(Playlist):
 
 class TVShowSeasonManager(PlaylistManager):
     def all(self):
-        return self.get_queryset().filter(parent__isnull=False)
+        return self.get_queryset().filter(parent__isnull=False, type=Playlist.PlaylistTypeChoices.SEASON)
 
 
 class TVShowSeasonProxy(Playlist):
