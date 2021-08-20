@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.utils import timezone
 
+from categories.models import Category
 from django_netflix.db.models import PublishStateOptions
 from django_netflix.db.receivers import publish_state_pre_save, slugify_pre_save
 from videos.models import Video
@@ -28,6 +29,7 @@ class Playlist(models.Model):
         PLAYLIST = "PLY", "Playlist"
 
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category, related_name="playlists", blank=True, null=True, on_delete=models.SET_NULL)
     order = models.IntegerField(default=1)
     title = models.CharField(max_length=230)
     type = models.CharField(max_length=3, choices=PlaylistTypeChoices.choices, default=PlaylistTypeChoices.PLAYLIST)
