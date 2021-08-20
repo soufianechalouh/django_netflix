@@ -21,12 +21,12 @@ class PlaylistManager(models.Manager):
 
 
 class Playlist(models.Model):
-    parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
+    parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL)
     order = models.IntegerField(default=1)
     title = models.CharField(max_length=230)
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(blank=True, null=True)
-    video = models.ForeignKey(Video, related_name="playlist_featured", null=True, on_delete=models.SET_NULL)
+    video = models.ForeignKey(Video, related_name="playlist_featured", blank=True, null=True, on_delete=models.SET_NULL)
     videos = models.ManyToManyField(Video, related_name="playlist_item", blank=True, through="PlaylistItem")
     active = models.BooleanField(default=True)
     state = models.CharField(max_length=2, choices=PublishStateOptions.choices, default=PublishStateOptions.DRAFT)
@@ -36,6 +36,9 @@ class Playlist(models.Model):
 
     objects = PlaylistManager()
 
+    def __str__(self):
+        return self.title
+
     @property
     def is_published(self):
         return self.active
@@ -43,6 +46,36 @@ class Playlist(models.Model):
 
 pre_save.connect(publish_state_pre_save, sender=Playlist)
 pre_save.connect(slugify_pre_save, sender=Playlist)
+
+
+class TVShowProxyManager(PlaylistManager):
+    def all(self):
+        return self.get_queryset().filter(parent__isnull=True)
+
+
+class TVShowProxy(Playlist):
+
+    objects = TVShowProxyManager()
+
+    class Meta:
+        verbose_name = "TV Show"
+        verbose_name_plural = "TV Shows"
+        proxy = True
+
+
+class TVShowSeasonManager(PlaylistManager):
+    def all(self):
+        return self.get_queryset().filter(parent__isnull=False)
+
+
+class TVShowSeasonProxy(Playlist):
+
+    objects = TVShowSeasonManager()
+
+    class Meta:
+        verbose_name = "Season"
+        verbose_name_plural = "Seasons"
+        proxy = True
 
 
 class PlaylistItem(models.Model):
