@@ -4,7 +4,7 @@ from .models import VideoAllProxy, VideoPublishedProxy
 
 
 class VideoAllProxyAdmin(admin.ModelAdmin):
-    list_display = ["title", "id", "state", "video_embed_id", "is_published"]
+    list_display = ["title", "id", "get_playlists_ids", "state", "video_embed_id", "is_published"]
     search_fields = ["title"]
     list_filter = ["state", "active"]
     readonly_fields = ["id"]

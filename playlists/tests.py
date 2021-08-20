@@ -3,13 +3,25 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 from django_netflix.db.models import PublishStateOptions
+from videos.models import Video
 from .models import Playlist
 
 
 class PlaylistModelTestCase(TestCase):
     def setUp(self):
-        self.obj_a = Playlist.objects.create(title='test title')
-        self.obj_b = Playlist.objects.create(title='test published title', state=PublishStateOptions.PUBLISHED)
+        video_a = Video.objects.create(title='test title')
+        self.video_a = video_a
+        self.obj_a = Playlist.objects.create(title='test title', video=video_a)
+        self.obj_b = Playlist.objects.create(title='test published title',
+                                             state=PublishStateOptions.PUBLISHED,
+                                             video=video_a)
+
+    def test_playlist_video(self):
+        self.assertEqual(self.obj_a.video, self.video_a)
+
+    def test_video_playlist(self):
+        qs = self.video_a.playlist_set.all()
+        self.assertEqual(qs.count(), 2)
 
     def test_valid_title(self):
         title = 'test title'
