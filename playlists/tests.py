@@ -8,6 +8,14 @@ from .models import Playlist
 
 
 class PlaylistModelTestCase(TestCase):
+
+    def create_show_with_seasons(self):
+        the_office = Playlist.objects.create(title="The Office Series")
+        season_1 = Playlist.objects.create(title="The Office Series season 1", parent=the_office, order=1)
+        season_2 = Playlist.objects.create(title="The Office Series season 2", parent=the_office, order=2)
+        season_3 = Playlist.objects.create(title="The Office Series season 3", parent=the_office, order=3)
+        self.show = the_office
+
     def create_videos(self):
         video_a = Video.objects.create(title='test title', video_embed_id="abc")
         video_b = Video.objects.create(title='test video b', video_embed_id="def")
@@ -19,6 +27,7 @@ class PlaylistModelTestCase(TestCase):
 
     def setUp(self):
         self.create_videos()
+        self.create_show_with_seasons()
         self.obj_a = Playlist.objects.create(title='test title', video=self.video_a)
         obj_b = Playlist.objects.create(title='test published title',
                                              state=PublishStateOptions.PUBLISHED,
@@ -26,6 +35,10 @@ class PlaylistModelTestCase(TestCase):
         obj_b.videos.set(self.video_qs)
         obj_b.save()
         self.obj_b = obj_b
+
+    def test_show_has_seasons(self):
+        seasons = self.show.playlist_set.all()
+        self.assertTrue(seasons.exists())
 
     def test_video_items(self):
         self.assertEqual(self.obj_b.videos.count(), 3)
@@ -66,7 +79,7 @@ class PlaylistModelTestCase(TestCase):
 
     def test_draft_case(self):
         qs = Playlist.objects.filter(state=PublishStateOptions.DRAFT)
-        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.count(), 5)
 
     def test_published_case(self):
         now = timezone.now()
