@@ -37,7 +37,7 @@ class Video(models.Model):
         return self.active
 
     def get_playlists_ids(self):
-        return list(self.playlist_set.all().values_list("id", flat=True))
+        return list(self.playlist_featured.all().values_list("id", flat=True))
 
 
 class VideoPublishedProxy(Video):
