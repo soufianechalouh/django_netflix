@@ -7,6 +7,11 @@ class PlaylistItemInline(admin.TabularInline):
     extra = 0
 
 
+class PlaylistItemInline(admin.TabularInline):
+    model = PlaylistItem
+    extra = 0
+
+
 class PlaylistAdmin(admin.ModelAdmin):
     inlines = [PlaylistItemInline]
 
