@@ -91,7 +91,7 @@ class TVShowProxy(Playlist):
 
 class MovieProxyManager(PlaylistManager):
     def all(self):
-        return self.get_queryset().filter(parent__isnull=False, type=Playlist.PlaylistTypeChoices.MOVIE)
+        return self.get_queryset().filter(type=Playlist.PlaylistTypeChoices.MOVIE)
 
 
 class MovieProxy(Playlist):
