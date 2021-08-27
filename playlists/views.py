@@ -1,3 +1,13 @@
-from django.shortcuts import render
+from django.views.generic import ListView
 
-# Create your views here.
+from .models import MovieProxy, TVShowProxy
+
+
+class MovieListView(ListView):
+    template_name = "playlist_list.html"
+    queryset = MovieProxy.objects.all()
+
+
+class TVShowView(ListView):
+    template_name = "playlist_list.html"
+    queryset = TVShowProxy.objects.all()
