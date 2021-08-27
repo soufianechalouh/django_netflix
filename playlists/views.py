@@ -1,6 +1,6 @@
 from django.views.generic import ListView
 
-from .models import MovieProxy, TVShowProxy
+from .models import Playlist, MovieProxy, TVShowProxy
 
 
 class PlaylistMixin():
@@ -22,3 +22,8 @@ class MovieListView(PlaylistMixin, ListView):
 class TVShowView(PlaylistMixin, ListView):
     queryset = TVShowProxy.objects.all()
     title = "TV Shows"
+
+
+class FeaturedPlaylistListView(PlaylistMixin, ListView):
+    queryset = Playlist.objects.featured_playlists()
+    title = "Featured"
