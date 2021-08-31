@@ -1,6 +1,8 @@
 from django.http import Http404
+from django.utils import timezone
 from django.views.generic import ListView, DetailView
 
+from django_netflix.db.models import PublishStateOptions
 from .models import Playlist, MovieProxy, TVShowProxy, TVShowSeasonProxy
 
 
@@ -51,11 +53,18 @@ class TVShowSeasonDetailView(PlaylistMixin, DetailView):
         kwargs = self.kwargs
         show_slug = kwargs.get("show_slug")
         season_slug = kwargs.get("season_slug")
-        qs = self.get_queryset().filter(parent__slug__iexact=show_slug,
-                                        slug__iexact=season_slug)
-        if not qs.count() == 1:
+        try:
+            obj = TVShowSeasonProxy.objects.get(parent__slug__iexact=show_slug,
+                                                slug__iexact=season_slug,
+                                                state=PublishStateOptions.PUBLISHED,
+                                                publish_timestamp__lte=timezone.now())
+        except TVShowSeasonProxy.MultipleObjectsReturned:
+            qs = TVShowSeasonProxy.objects.filter(parent__slug__iexact=show_slug,
+                                                  slug__iexact=season_slug).published()
+            obj = qs.first()
+        except:
             raise Http404
-        return qs.first()
+        return obj
 
 
 class FeaturedPlaylistListView(PlaylistMixin, ListView):

@@ -8,6 +8,9 @@
 {% block content %}
                 <h1>{{ object.title }}</h1>
                 {{ object.slug }}  {{ object.get_short_display }}
+    {% for season in object.seasons %}
+        {{ season.title }} {{ season.slug }} <br/>
+    {% endfor %}
     <ul>
     </ul>
 
