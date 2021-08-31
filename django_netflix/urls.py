@@ -16,11 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from playlists.views import MovieListView, TVShowView, FeaturedPlaylistListView
+from playlists.views import MovieListView, TVShowListView, FeaturedPlaylistListView, MovieDetailView, TVShowDetailView, \
+    PlaylistDetailView, TVShowSeasonDetailView
 
 urlpatterns = [
     path('', FeaturedPlaylistListView.as_view()),
     path('admin/', admin.site.urls),
+    path('movies/<slug:slug>/', MovieDetailView.as_view()),
     path('movies/', MovieListView.as_view()),
-    path('shows/', TVShowView.as_view()),
+    path('media/<int:pk>', PlaylistDetailView.as_view()),
+    path('shows/<slug:show_slug>/seasons/<slug:season_slug>/', TVShowSeasonDetailView.as_view()),
+    path('shows/<slug:slug>/seasons/', TVShowDetailView.as_view()),
+    path('shows/<slug:slug>/', TVShowDetailView.as_view()),
+    path('shows/', TVShowListView.as_view()),
 ]
