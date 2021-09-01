@@ -71,6 +71,36 @@ class Playlist(models.Model):
     def is_published(self):
         return self.active
 
+    def get_video_id(self):
+        """Get main video id to render movie for user"""
+        return self.video.get_video_id()
+
+    def get_clips(self):
+        """Get clips to render clips for user"""
+        return self.playlistitem_set.all().published()
+
+
+class MovieProxyManager(PlaylistManager):
+    def all(self):
+        return self.get_queryset().filter(type=Playlist.PlaylistTypeChoices.MOVIE)
+
+
+class MovieProxy(Playlist):
+
+    objects = MovieProxyManager()
+
+    def get_movie_id(self):
+        return self.get_video_id()
+
+    class Meta:
+        verbose_name = "Movie"
+        verbose_name_plural = "Movies"
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.type = Playlist.PlaylistTypeChoices.MOVIE
+        super().save(*args, **kwargs)
+
 
 class TVShowProxyManager(PlaylistManager):
     def all(self):
@@ -98,25 +128,6 @@ class TVShowProxy(Playlist):
         return f"{self.seasons.count()} Seasons"
 
 
-class MovieProxyManager(PlaylistManager):
-    def all(self):
-        return self.get_queryset().filter(type=Playlist.PlaylistTypeChoices.MOVIE)
-
-
-class MovieProxy(Playlist):
-
-    objects = MovieProxyManager()
-
-    class Meta:
-        verbose_name = "Movie"
-        verbose_name_plural = "Movies"
-        proxy = True
-
-    def save(self, *args, **kwargs):
-        self.type = Playlist.PlaylistTypeChoices.MOVIE
-        super().save(*args, **kwargs)
-
-
 class TVShowSeasonManager(PlaylistManager):
     def all(self):
         return self.get_queryset().filter(parent__isnull=False, type=Playlist.PlaylistTypeChoices.SEASON)
@@ -135,6 +146,31 @@ class TVShowSeasonProxy(Playlist):
         self.type = Playlist.PlaylistTypeChoices.SEASON
         super().save(*args, **kwargs)
 
+    def get_season_trailer(self):
+        """Get movie id to render movie for user"""
+        return self.video.get_video_id()
+
+    def get_episodes(self):
+        """Get episodes to render clips for user"""
+        return self.get_clips()
+
+
+class PlaylistItemQueryset(models.QuerySet):
+    def published(self):
+        return self.filter(video__state=PublishStateOptions.PUBLISHED,
+                           video__publish_timestamp__lte=timezone.now(),
+                           playlist__state=PublishStateOptions.PUBLISHED,
+                           playlist__publish_timestamp__lte=timezone.now()
+                           )
+
+
+class PlaylistItemManager(models.Manager):
+    def get_queryset(self):
+        return PlaylistItemQueryset(self.model, using=self._db)
+
+    def published(self):
+        return self.get_queryset().published()
+
 
 class PlaylistItem(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
@@ -152,8 +188,8 @@ pre_save.connect(unique_slugify_pre_save, sender=TVShowProxy)
 pre_save.connect(publish_state_pre_save, sender=TVShowSeasonProxy)
 pre_save.connect(unique_slugify_pre_save, sender=TVShowSeasonProxy)
 
-pre_save.connect(unique_slugify_pre_save, sender=MovieProxy)
 pre_save.connect(publish_state_pre_save, sender=MovieProxy)
+pre_save.connect(unique_slugify_pre_save, sender=MovieProxy)
 
 pre_save.connect(publish_state_pre_save, sender=Playlist)
 pre_save.connect(unique_slugify_pre_save, sender=Playlist)
