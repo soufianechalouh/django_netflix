@@ -1,0 +1,9 @@
+{% if video_id %}
+    <h1>Video id {{ video_id }}</h1>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video_id }}" title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+{% else %}
+        <h1>Video id {{ video_id }}</h1>
+    <p>Video is coming soon</p>
+{% endif %}
