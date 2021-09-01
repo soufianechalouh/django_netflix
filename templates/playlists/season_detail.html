@@ -7,10 +7,13 @@
 
 {% block content %}
                 <h1>{{ object.title }}</h1>
-                <h1>{{ object.slug }}  {{ object.get_short_description }}</h1>
+    <h1>Trailer</h1>
+                {% include 'videos/embed.html' with video_id=object.video.get_video_id %}
 
-    <ul>
-    </ul>
-
+    <h3>Episodes</h3>
+    {% for episode in object.get_episodes %}
+        <h5>Episode {{ episode.order }}</h5>
+            {% include 'videos/embed.html' with video_id=episode.video.get_video_id %}
+    {% endfor %}
 
 {% endblock %}d
