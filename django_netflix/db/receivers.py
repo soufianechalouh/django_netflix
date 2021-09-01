@@ -22,7 +22,6 @@ def slugify_pre_save(sender, instance, *args, **kwargs):
 
 
 def unique_slugify_pre_save(sender, instance, *args, **kwargs):
-    title = instance.title
     slug = instance.slug
     if slug is None:
-        instance.slug = get_unique_slug(title)
+        instance.slug = get_unique_slug(instance)

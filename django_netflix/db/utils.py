@@ -27,3 +27,4 @@ def get_unique_slug(instance, new_slug=None):
         rand_str = get_random_string()
         slug = new_slug+rand_str
         return get_unique_slug(instance, slug)
+    return slug
