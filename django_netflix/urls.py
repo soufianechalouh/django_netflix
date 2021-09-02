@@ -22,6 +22,7 @@ from playlists.views import MovieListView, TVShowListView, FeaturedPlaylistListV
 urlpatterns = [
     path('', FeaturedPlaylistListView.as_view()),
     path('admin/', admin.site.urls),
+    path('tags/', include("tags.urls")),
     path('category/', include("categories.urls")),
     path('categories/', include("categories.urls")),
     path('movies/<slug:slug>/', MovieDetailView.as_view()),
