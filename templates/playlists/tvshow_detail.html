@@ -12,7 +12,9 @@
                 {% include 'videos/embed.html' with video_id=object.video.get_video_id %}
     <ul>
     {% for season in object.seasons %}
-        <li>{{ season.title }} {{ season.slug }}</li>
+        <li>{{ forloop.counter }} - <a href="{{ season.get_absolute_url }}">
+            {{ season.title }}</a>
+        </li>
     {% endfor %}
     </ul>
 

@@ -59,6 +59,30 @@ class Playlist(models.Model):
     def __str__(self):
         return self.title
 
+    def get_related_items(self):
+        return self.playlistrelated_set.all()
+
+    def get_absolute_url(self):
+        if self.is_movie:
+            return f"/movies/{self.slug}/"
+        if self.is_show:
+            return f"/shows/{self.slug}/"
+        if self.parent is not None and self.is_season:
+            return f"/shows/{self.parent.slug}/seasons/{self.slug}/"
+        return f"/playlists/{self.slug}/"
+
+    @property
+    def is_movie(self):
+        return self.type == self.PlaylistTypeChoices.MOVIE
+
+    @property
+    def is_show(self):
+        return self.type == self.PlaylistTypeChoices.TV_SHOW
+
+    @property
+    def is_season(self):
+        return self.type == self.PlaylistTypeChoices.SEASON
+
     def get_rating_avg(self):
         return Playlist.objects.filter(id=self.pk).aggregate(Avg("ratings__value"))
 
