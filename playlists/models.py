@@ -17,6 +17,17 @@ class PlaylistQueryset(models.QuerySet):
     def published(self):
         return self.filter(state=PublishStateOptions.PUBLISHED, publish_timestamp__lte=timezone.now())
 
+    def search(self, query=None):
+        if query is None:
+            return self.none()
+        return self.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(category__title__icontains=query) |
+            Q(category__slug__icontains=query) |
+            Q(tags__tag__icontains=query)
+        ).distinct()
+
     def movie_or_show(self):
         return self.filter(
             Q(type=Playlist.PlaylistTypeChoices.MOVIE) |

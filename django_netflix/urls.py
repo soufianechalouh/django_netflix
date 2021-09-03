@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from playlists.views import MovieListView, TVShowListView, FeaturedPlaylistListView, MovieDetailView, TVShowDetailView, \
-    PlaylistDetailView, TVShowSeasonDetailView
+    PlaylistDetailView, TVShowSeasonDetailView, SearchView
 
 urlpatterns = [
     path('', FeaturedPlaylistListView.as_view()),
@@ -27,6 +27,7 @@ urlpatterns = [
     path('categories/', include("categories.urls")),
     path('movies/<slug:slug>/', MovieDetailView.as_view()),
     path('movies/', MovieListView.as_view()),
+    path('search/', SearchView.as_view()),
     path('media/<int:pk>', PlaylistDetailView.as_view()),
     path('shows/<slug:show_slug>/seasons/<slug:season_slug>/', TVShowSeasonDetailView.as_view()),
     path('shows/<slug:slug>/seasons/', TVShowDetailView.as_view()),

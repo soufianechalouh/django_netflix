@@ -7,6 +7,23 @@ from .mixins import PlaylistMixin
 from .models import Playlist, MovieProxy, TVShowProxy, TVShowSeasonProxy
 
 
+class SearchView(PlaylistMixin, ListView):
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data()
+        query = self.request.GET.get("q")
+        if query is not None:
+            context["title"] = f"Searchable for {query}"
+        else:
+            context["title"] = f"Perform a search"
+        return context
+
+    def get_queryset(self):
+        request = self.request
+        query = request.GET.get("q")
+        return Playlist.objects.all().search(query=query)
+
+
 class MovieListView(PlaylistMixin, ListView):
     queryset = MovieProxy.objects.all()
     title = "Movies"

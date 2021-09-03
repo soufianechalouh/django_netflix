@@ -1,4 +1,4 @@
-class PlaylistMixin():
+class PlaylistMixin:
     title = None
     template_name = "playlist_list.html"
 
