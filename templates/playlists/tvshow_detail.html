@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load rating %}
 
 {% block head_title %}
         {{ object.title }} /
@@ -7,6 +8,10 @@
 
 {% block content %}
                 <h1>{{ object.title }}</h1>
+    <div>
+    {% rating object=object %}
+    </div>
+    <div>
 
     <h1>Trailer</h1>
                 {% include 'videos/embed.html' with video_id=object.video.get_video_id %}
@@ -17,6 +22,5 @@
         </li>
     {% endfor %}
     </ul>
-
-
-{% endblock %}d
+</div>
+{% endblock %}

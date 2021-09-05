@@ -13,7 +13,7 @@ class SearchView(PlaylistMixin, ListView):
         context = super().get_context_data()
         query = self.request.GET.get("q")
         if query is not None:
-            context["title"] = f"Searchable for {query}"
+            context["title"] = f"Search for {query}"
         else:
             context["title"] = f"Perform a search"
         return context
