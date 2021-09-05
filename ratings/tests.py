@@ -63,7 +63,6 @@ class RatingTestCase(TestCase):
         qs = Playlist.objects.all()
         self.assertTrue(qs.exists())
         self.assertEqual(qs.count(), self.playlist_count)
-        self.assertEqual(self.playlists.count(), self.user_count)
 
     def test_rating_count(self):
         qs = Rating.objects.all()
