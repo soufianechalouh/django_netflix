@@ -14,13 +14,25 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
-from playlists.views import MovieListView, TVShowView, FeaturedPlaylistListView
+from playlists.views import MovieListView, TVShowListView, FeaturedPlaylistListView, MovieDetailView, TVShowDetailView, \
+    PlaylistDetailView, TVShowSeasonDetailView, SearchView
+from ratings.views import rate_object_view
 
 urlpatterns = [
     path('', FeaturedPlaylistListView.as_view()),
     path('admin/', admin.site.urls),
+    path('tags/', include("tags.urls")),
+    path('category/', include("categories.urls")),
+    path('categories/', include("categories.urls")),
+    path('movies/<slug:slug>/', MovieDetailView.as_view()),
     path('movies/', MovieListView.as_view()),
-    path('shows/', TVShowView.as_view()),
+    path('search/', SearchView.as_view()),
+    path('media/<int:pk>', PlaylistDetailView.as_view()),
+    path('shows/<slug:show_slug>/seasons/<slug:season_slug>/', TVShowSeasonDetailView.as_view()),
+    path('shows/<slug:slug>/seasons/', TVShowDetailView.as_view()),
+    path('shows/<slug:slug>/', TVShowDetailView.as_view()),
+    path('shows/', TVShowListView.as_view()),
+    path('rate/', rate_object_view),
 ]

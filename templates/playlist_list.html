@@ -1,22 +1,28 @@
 {% extends 'base.html' %}
 
 {% block head_title %}
-        {% if title %}
-            {{ title }} /
-        {% endif %}
-        {{ block.super }}
+    {% if title %}
+        {{ title }} /
+    {% endif %}
+    {{ block.super }}
 {% endblock %}
 
 {% block content %}
-        <h1>
-            {% if title %}
-                <h1>{{ title }}</h1>
+    <h1>
+        {% if title %}
+            <h1>{{ title }}</h1>
+        {% endif %}
+        {{ block.super }}</h1>
+    {% for instance in object_list %}
+        <div>
+            <h3>{{ instance.title }}</h3>
+            <p>{{ instance.description }}</p>
+            {% if instance.is_movie %}
+                {% include "playlists/cards/movie.html" with movie=instance %}
+            {% elif instance.is_show %}
+                {% include "playlists/cards/show.html" with show=instance %}
             {% endif %}
-            {{ block.super }}</h1>
-    <ul>
-        {% for instance in object_list %}
-            <li>{{ instance.title }} {{ instance.get_short_display }}</li>
-        {% endfor %}
-    </ul>
+        </div>
+    {% endfor %}
 
 {% endblock %}

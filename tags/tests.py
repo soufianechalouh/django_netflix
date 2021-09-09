@@ -41,7 +41,7 @@ class TaggedItemTestCase(TestCase):
         self.assertEqual(self.ply_obj.tags.count(), 2)
 
     def test_related_field_query_name(self):
-        qs = TaggedItem.objects.filter(playlist__title="new-tag")
+        qs = TaggedItem.objects.filter(playlist__title=self.ply_title)
         self.assertEqual(qs.count(), 1)
 
     def test_related_field_via_content_type (self):

@@ -32,9 +32,22 @@ class Video(models.Model):
 
     objects = VideoManager()
 
+    def get_video_id(self):
+        if not self.is_published:
+            return None
+        return self.video_embed_id
+
     @property
     def is_published(self):
-        return self.active
+        if self.active is False:
+            return False
+        state = self.state
+        if state != PublishStateOptions.PUBLISHED:
+            return False
+        if (pub_timestamp := self.publish_timestamp) is None:
+            return False
+        now = timezone.now()
+        return pub_timestamp <= now
 
     def get_playlists_ids(self):
         return list(self.playlist_featured.all().values_list("id", flat=True))
@@ -56,3 +69,9 @@ class VideoAllProxy(Video):
 
 pre_save.connect(publish_state_pre_save, sender=Video)
 pre_save.connect(slugify_pre_save, sender=Video)
+
+pre_save.connect(publish_state_pre_save, sender=VideoAllProxy)
+pre_save.connect(slugify_pre_save, sender=VideoAllProxy)
+
+pre_save.connect(publish_state_pre_save, sender=VideoPublishedProxy)
+pre_save.connect(slugify_pre_save, sender=VideoPublishedProxy)

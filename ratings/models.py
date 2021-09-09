@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
+from django.db.models import Avg
+from django.db.models.signals import post_save
 
 User = settings.AUTH_USER_MODEL
 
@@ -13,7 +15,17 @@ class RatingChoices(models.IntegerChoices):
     FOUR = 4
     FIVE = 5
 
-    __empty__ = "Unknown"
+    __empty__ = "Rate this"
+
+
+class RatingQuerySet(models.QuerySet):
+    def rating(self):
+        return self.aggregate(average=Avg("value"))["average"]
+
+
+class RatingManager(models.Manager):
+    def get_queryset(self):
+        return RatingQuerySet(self.model, using=self._db)
 
 
 class Rating(models.Model):
@@ -22,3 +34,17 @@ class Rating(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+
+    objects = RatingManager()
+
+
+def rating_post_save(sender, instance, created,  *args, **kwargs):
+    if created:
+        content_type = instance.content_type
+        user = instance.user
+        qs = Rating.objects.filter(user=user, content_type=content_type, object_id=instance.object_id).exclude(pk=instance.pk)
+        if qs.exists():
+            qs.delete()
+
+
+post_save.connect(rating_post_save, sender=Rating)
