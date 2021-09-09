@@ -18,6 +18,7 @@ from django.urls import path, include
 
 from playlists.views import MovieListView, TVShowListView, FeaturedPlaylistListView, MovieDetailView, TVShowDetailView, \
     PlaylistDetailView, TVShowSeasonDetailView, SearchView
+from ratings.views import rate_object_view
 
 urlpatterns = [
     path('', FeaturedPlaylistListView.as_view()),
@@ -33,4 +34,5 @@ urlpatterns = [
     path('shows/<slug:slug>/seasons/', TVShowDetailView.as_view()),
     path('shows/<slug:slug>/', TVShowDetailView.as_view()),
     path('shows/', TVShowListView.as_view()),
+    path('rate/', rate_object_view),
 ]
